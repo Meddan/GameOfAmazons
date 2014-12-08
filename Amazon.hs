@@ -31,8 +31,14 @@ replace _ _ []  = []
 replace n a list | n < 0 || (n+1) > length list = list
                  | otherwise = take n list ++ [a] ++ drop (n + 1) list
 
+{-
+Moves the tile at the given position to the other given position.
+Checks if positions are valid and there is a clear path between them.
+-}
 move :: Board -> Pos -> Pos -> Board
 move b p1 p2 | not (clearPath b p1 p2) = b
+             | piece == Empty = b
+             | piece == Arrow = b
              | otherwise = replaceM p2 piece (replaceM p1 Empty b)
         where 
             piece = getPos b p1
