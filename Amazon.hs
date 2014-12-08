@@ -34,6 +34,7 @@ replace n a list | n < 0 || (n+1) > length list = list
 {-
 Moves the tile at the given position to the other given position.
 Checks if positions are valid and there is a clear path between them.
+Also checks if the piece is an amazon and not empty or arrow.
 -}
 move :: Board -> Pos -> Pos -> Board
 move b p1 p2 | not (clearPath b p1 p2) = b
@@ -49,9 +50,10 @@ clearPath :: Board -> Pos -> Pos -> Bool
 clearPath b (x1,y1) (x2,y2) | not (validPos (x1,y1) && validPos (x2,y2)) = False
                             | not straightLine = False
                             | otherwise = emptyPath b (x1,y1) (x2,y2)
-    where 
+    where
+        --If we aren't moving straight up or down, we have to be moving the same amount of tiles in both x and y direction.
         straightLine = ((x1 == x2 ) || (y1 == y2) ) || (abs (x1 - x2) == abs (y1-y2))
-
+        --Checks if the given path is empty or not
         emptyPath :: Board -> Pos -> Pos -> Bool
         emptyPath b (x1,y1) (x2,y2) | y1 == y2 = all (==Empty) (take (x2-x1) (drop x1 row))
                                     | x1 == x2 = all (==Empty) (take (y2-y1) (drop y1 row))
@@ -64,14 +66,17 @@ clearPath b (x1,y1) (x2,y2) | not (validPos (x1,y1) && validPos (x2,y2)) = False
                   row2 = head (drop x1 (transpose (rows b)))
                   east = x2 > x1
                   north = y2 > y1
-
+        --Checks if the diagonal path given is empty or not.
         diagonalPath :: Board -> Pos -> Pos -> Int -> Int -> Bool
         diagonalPath b (x1,y1) (x2,y2) dx dy | x1 == x2 = True
                                              | (getPos b (x1,y1)) /= Empty = False
                                              | otherwise = diagonalPath b ((x1+dx),(y1+dy)) (x2,y2) dx dy
 
+--Checks if the given position is valid (inside the board)
 validPos :: Pos -> Bool
 validPos (x,y) = (x >= 0 && x <=9) && (y >= 0 && y <=9)
 
+--Returns the tile at the given position.
 getPos :: Board -> Pos -> Tile
-getPos b (x,y) = ((rows b)!!y)!!x
+getPos b (x,y) | validPos (x,y) = ((rows b)!!y)!!x
+               | otherwise = undefined
