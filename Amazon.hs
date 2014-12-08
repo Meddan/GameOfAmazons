@@ -25,18 +25,16 @@ replace n a list | n < 0 || (n+1) > length list = list
                  | otherwise = take n list ++ [a] ++ drop (n + 1) list
 
 move :: Board -> Pos -> Pos -> Board
-move = undefined
+move b p1 p2 | not (clearPath b p1 p2) = error ""
 
 --TODO:props
 --Not moving at all -> True or false?
 clearPath :: Board -> Pos -> Pos -> Bool
-clearPath b p1 p2 | not (validPos p1 && validPos p2) = False
-                  | not (clearPath' p1 p2) = False
-                  | otherwise = emptyPath b p1 p2
+clearPath b (x1,y1) (x2,y2) | not (validPos (x1,y1) && validPos (x2,y2)) = False
+                  | not straightLine = False
+                  | otherwise = emptyPath b (x1,y1) (x2,y2)
     where 
-        clearPath' :: Pos -> Pos -> Bool
-        clearPath' (x1,y1) (x2,y2) | (x1 == x2 ) || (y1 == y2) = True
-                                   | otherwise = abs (x1 - x2) == abs (y1-y2)
+        straightLine = ((x1 == x2 ) || (y1 == y2) ) || (abs (x1 - x2) == abs (y1-y2))
 
         emptyPath :: Board -> Pos -> Pos -> Bool
         emptyPath b (x1,y1) (x2,y2) | y1 == y2 = all (==Empty) (take (x2-x1) (drop x1 row))
