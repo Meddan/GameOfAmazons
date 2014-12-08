@@ -43,7 +43,10 @@ move b p1 p2 | not (clearPath b p1 p2) = b
              | otherwise = replaceM p2 piece (replaceM p1 Empty b)
         where 
             piece = getPos b p1
-
+--Shoots an arrow to the given space. Checks if the shot is possible but not if there is an amazon available to shoot it.
+shoot :: Board -> Pos -> Pos -> Board
+shoot b p1 p2 | not (clearPath b p1 p2) = b
+              | otherwise = replaceM p2 Arrow b
 --TODO:props
 --Not moving at all -> True or false?
 clearPath :: Board -> Pos -> Pos -> Bool
@@ -76,7 +79,7 @@ clearPath b (x1,y1) (x2,y2) | not (validPos (x1,y1) && validPos (x2,y2)) = False
 validPos :: Pos -> Bool
 validPos (x,y) = (x >= 0 && x <=9) && (y >= 0 && y <=9)
 
---Returns the tile at the given position.
+--Returns the tile at the given position after checking that it is valid.
 getPos :: Board -> Pos -> Tile
 getPos b (x,y) | validPos (x,y) = ((rows b)!!y)!!x
                | otherwise = undefined
