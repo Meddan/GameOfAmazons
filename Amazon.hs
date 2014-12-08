@@ -19,20 +19,30 @@ initialBoard = Board [(topRow Black),blankRow,blankRow,(middleRow Black),blankRo
         middleRow :: Tile -> [Tile]
         middleRow t = replace 0 t (replace 9 t blankRow )
 
+--Replaces the given position in the board with the given tile.
+replaceM :: Pos -> Tile -> Board -> Board
+replaceM (x,y) t b | not (validPos (x,y)) = b
+                   | otherwise = Board (replace y (replace x t row) (rows b))
+        where 
+            row = head (drop y (rows b))
+
 replace :: Int -> a -> [a] -> [a]
 replace _ _ []  = []
 replace n a list | n < 0 || (n+1) > length list = list
                  | otherwise = take n list ++ [a] ++ drop (n + 1) list
 
 move :: Board -> Pos -> Pos -> Board
-move b p1 p2 | not (clearPath b p1 p2) = error ""
+move b p1 p2 | not (clearPath b p1 p2) = b
+             | otherwise = replaceM p2 piece (replaceM p1 Empty b)
+        where 
+            piece = getPos b p1
 
 --TODO:props
 --Not moving at all -> True or false?
 clearPath :: Board -> Pos -> Pos -> Bool
 clearPath b (x1,y1) (x2,y2) | not (validPos (x1,y1) && validPos (x2,y2)) = False
-                  | not straightLine = False
-                  | otherwise = emptyPath b (x1,y1) (x2,y2)
+                            | not straightLine = False
+                            | otherwise = emptyPath b (x1,y1) (x2,y2)
     where 
         straightLine = ((x1 == x2 ) || (y1 == y2) ) || (abs (x1 - x2) == abs (y1-y2))
 
