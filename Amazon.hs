@@ -1,11 +1,44 @@
 import Data.List
+import Test.QuickCheck
+
 data Board = Board {rows :: [[Tile]]}
     deriving (Show, Eq)
 
 data Tile = Black | White | Arrow | Empty
     deriving (Show, Eq)
 
+-- Generates a random tile
+instance Arbitrary Tile where
+  arbitrary = oneof [return Black,
+                    return White,
+                    return Arrow,
+                    return Empty]
+
+-- Generates a weighted tile for arbitrary boards
+tile :: Gen(Tile)
+tile = frequency [(10, return Empty),
+                  (2, oneof [return Black,
+                             return White,
+                             return Arrow])]
+
+-- Generates a randomized board
+instance Arbitrary Board where
+arbitrary =
+    do rows <- sequence [ sequence [ tile | j <- [1..10] ] | i <- [1..10] ]
+       return (Board rows)
+
 type Pos = (Int,Int)
+
+-- For random generation
+data APos = APos { p :: Pos}
+    deriving Show
+
+-- Generates random position
+instance Arbitrary APos where
+  arbitrary = do
+    x <- choose (0,9)
+    y <- choose (0,9)
+    return (APos (x,y))
 
 initialBoard :: Board
 initialBoard = Board [(topRow Black),blankRow,blankRow,(middleRow Black),blankRow,blankRow,(middleRow White),blankRow,blankRow,(topRow White)]
