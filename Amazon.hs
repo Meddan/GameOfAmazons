@@ -84,6 +84,12 @@ move b p1 p2 | not (clearPath b p1 p2) = b
 shoot :: Board -> Pos -> Pos -> Board
 shoot b p1 p2 | not (clearPath b p1 p2) = b
               | otherwise = replaceM p2 Arrow b
+
+prop_shoot :: Board -> APos -> APos -> Property
+prop_shoot b pos1 pos2 = (b /= shoot b p1 p2) && (getPos b p2 /= Arrow) ==> getPos (shoot b p1 p2) p2 == Arrow
+  where p1 = (p pos1)
+        p2 = (p pos2)
+
 --TODO:props
 --Not moving at all -> True or false?
 clearPath :: Board -> Pos -> Pos -> Bool
