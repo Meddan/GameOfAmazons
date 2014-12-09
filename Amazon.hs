@@ -79,7 +79,28 @@ clearPath b (x1,y1) (x2,y2) | not (validPos (x1,y1) && validPos (x2,y2)) = False
 validPos :: Pos -> Bool
 validPos (x,y) = (x >= 0 && x <=9) && (y >= 0 && y <=9)
 
+--Checks if the game is over and returns the color of the victor, empty if not over.
+--TODO: Fix ugly.
+gameOver :: Board -> Tile
+gameOver b = undefined
+    where
+        overFor :: Board -> Tile -> Bool
+        overFor b t = findTiles b t
+
+        tilesAround :: Board -> [Pos] -> [Tile]
+        tilesAround
+
 --Returns the tile at the given position after checking that it is valid.
 getPos :: Board -> Pos -> Tile
 getPos b (x,y) | validPos (x,y) = ((rows b)!!y)!!x
                | otherwise = undefined
+
+findTiles :: Board -> Tile -> [Pos]
+findTiles b t = findInRow (rows b) t 0
+    where
+        findInRow :: [[Tile]] -> Tile -> Int -> [Pos]
+        findInRow [] _ _ = []
+        findInRow _ _ 10 = []
+        findInRow (x:xs) t y = (zip (elemIndices t x) yList) ++ findInRow xs t (y+1)
+            where
+                yList = replicate 10 y
