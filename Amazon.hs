@@ -81,7 +81,8 @@ move b p1 p2 | not (clearPath b p1 p2) = b
         where 
             piece = getPos b p1
 
-prop_move :: Board -> Pos -> Pos -> Property
+-- Gives up, needs better condition
+prop_move :: Board -> APos -> APos -> Property
 prop_move b pos1 pos2 = b /= newBoard ==> (getPos newBoard p1 == Empty) && (getPos newBoard p2 == getPos b p1)
   where p1 = (p pos1)
         p2 = (p pos2)
@@ -93,9 +94,10 @@ shoot b p1 p2 | not (clearPath b p1 p2) = b
               | otherwise = replaceM p2 Arrow b
 
 prop_shoot :: Board -> APos -> APos -> Property
-prop_shoot b pos1 pos2 = b /= shoot b p1 p2 ==> getPos (shoot b p1 p2) p2 == Arrow
+prop_shoot b pos1 pos2 = b /= newBoard ==> getPos newBoard p2 == Arrow
   where p1 = (p pos1)
         p2 = (p pos2)
+        newBoard = shoot b p1 p2
 
 --TODO:props
 --Not moving at all -> True or false?
