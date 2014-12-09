@@ -80,13 +80,14 @@ move b p1 p2 | not (clearPath b p1 p2) = b
              | otherwise = replaceM p2 piece (replaceM p1 Empty b)
         where 
             piece = getPos b p1
+
 --Shoots an arrow to the given space. Checks if the shot is possible but not if there is an amazon available to shoot it.
 shoot :: Board -> Pos -> Pos -> Board
 shoot b p1 p2 | not (clearPath b p1 p2) = b
               | otherwise = replaceM p2 Arrow b
 
 prop_shoot :: Board -> APos -> APos -> Property
-prop_shoot b pos1 pos2 = (b /= shoot b p1 p2) && (getPos b p2 /= Arrow) ==> getPos (shoot b p1 p2) p2 == Arrow
+prop_shoot b pos1 pos2 = b /= shoot b p1 p2 ==> getPos (shoot b p1 p2) p2 == Arrow
   where p1 = (p pos1)
         p2 = (p pos2)
 
