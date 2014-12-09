@@ -81,6 +81,12 @@ move b p1 p2 | not (clearPath b p1 p2) = b
         where 
             piece = getPos b p1
 
+prop_move :: Board -> Pos -> Pos -> Property
+prop_move b pos1 pos2 = b /= newBoard ==> (getPos newBoard p1 == Empty) && (getPos newBoard p2 == getPos b p1)
+  where p1 = (p pos1)
+        p2 = (p pos2)
+        newBoard = move b p1 p2
+
 --Shoots an arrow to the given space. Checks if the shot is possible but not if there is an amazon available to shoot it.
 shoot :: Board -> Pos -> Pos -> Board
 shoot b p1 p2 | not (clearPath b p1 p2) = b
