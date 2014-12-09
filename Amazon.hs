@@ -23,7 +23,7 @@ tile = frequency [(10, return Empty),
 
 -- Generates a randomized board
 instance Arbitrary Board where
-arbitrary =
+  arbitrary =
     do rows <- sequence [ sequence [ tile | j <- [1..10] ] | i <- [1..10] ]
        return (Board rows)
 
@@ -31,7 +31,7 @@ type Pos = (Int,Int)
 
 -- For random generation
 data APos = APos { p :: Pos}
-    deriving Show
+    deriving (Show, Eq)
 
 -- Generates random position
 instance Arbitrary APos where
@@ -58,6 +58,10 @@ replaceM (x,y) t b | not (validPos (x,y)) = b
                    | otherwise = Board (replace y (replace x t row) (rows b))
         where 
             row = head (drop y (rows b))
+
+prop_replaceM :: APos -> Tile -> Board -> Property
+prop_replaceM ap t b = t /= getPos b pos ==> (getPos (replaceM pos t b) pos == t)
+  where pos = (p ap)
 
 replace :: Int -> a -> [a] -> [a]
 replace _ _ []  = []
