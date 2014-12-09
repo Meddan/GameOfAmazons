@@ -61,9 +61,9 @@ clearPath b (x1,y1) (x2,y2) | not (validPos (x1,y1) && validPos (x2,y2)) = False
         emptyPath b (x1,y1) (x2,y2) | y1 == y2 = all (==Empty) (take (x2-x1) (drop x1 row))
                                     | x1 == x2 = all (==Empty) (take (y2-y1) (drop y1 row))
                                     | north && east = diagonalPath b (x1,y1) (x2,y2) 1 1
-                                    | east = diagonalPath b (x1,y1) (x2,y2) 1 0
-                                    | north = diagonalPath b (x1,y1) (x2,y2) 0 1
-                                    | otherwise = diagonalPath b (x1,y1) (x2,y2) 0 0
+                                    | east = diagonalPath b (x1,y1) (x2,y2) 1 (-1)
+                                    | north = diagonalPath b (x1,y1) (x2,y2) (-1) 1
+                                    | otherwise = diagonalPath b (x1,y1) (x2,y2) (-1) (-1)
 
             where row = head (drop y1 (rows b))
                   row2 = head (drop x1 (transpose (rows b)))
@@ -85,10 +85,11 @@ gameOver :: Board -> Tile
 gameOver b = undefined
     where
         overFor :: Board -> Tile -> Bool
-        overFor b t = findTiles b t
+        overFor b t = undefined
+            --findTiles b t
 
         tilesAround :: Board -> [Pos] -> [Tile]
-        tilesAround
+        tilesAround = undefined
 
 --Returns the tile at the given position after checking that it is valid.
 getPos :: Board -> Pos -> Tile
