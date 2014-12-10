@@ -117,8 +117,8 @@ clearPath b (x1,y1) (x2,y2) | not (validPos (x1,y1) && validPos (x2,y2)) = False
         straightLine = ((x1 == x2 ) || (y1 == y2) ) || (abs (x1 - x2) == abs (y1-y2))
         --Checks if the given path is empty or not
         emptyPath :: Board -> Pos -> Pos -> Bool
-        emptyPath b (x1,y1) (x2,y2) | y1 == y2 = all (==Empty) (take (x2-x1) (drop x1 row))
-                                    | x1 == x2 = all (==Empty) (take (y2-y1) (drop y1 row))
+        emptyPath b (x1,y1) (x2,y2) | y1 == y2 = all (==Empty) (take (x2-x1) (drop (x1+1) row))
+                                    | x1 == x2 = all (==Empty) (take (y2-y1) (drop (y1+1) row2))
                                     | north && east = diagonalPath b (x1,y1) (x2,y2) 1 1
                                     | east = diagonalPath b (x1,y1) (x2,y2) 1 (-1)
                                     | north = diagonalPath b (x1,y1) (x2,y2) (-1) 1
@@ -131,7 +131,7 @@ clearPath b (x1,y1) (x2,y2) | not (validPos (x1,y1) && validPos (x2,y2)) = False
         --Checks if the diagonal path given is empty or not.
         diagonalPath :: Board -> Pos -> Pos -> Int -> Int -> Bool
         diagonalPath b (x1,y1) (x2,y2) dx dy | x1 == x2 = True
-                                             | (getPos b (x1,y1)) /= Empty = False
+                                             | (getPos b ((x1+dx),(y1+dy))) /= Empty = False
                                              | otherwise = diagonalPath b ((x1+dx),(y1+dy)) (x2,y2) dx dy
 
 --Checks if the given position is valid (inside the board)
