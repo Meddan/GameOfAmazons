@@ -163,10 +163,10 @@ findTiles b t = findInRow (rows b) t 0
                 yList = replicate 10 y
 
 printBoard :: Board -> IO ()
-printBoard b = putStrLn (oneString (rows b))
-  where
-    oneString :: [[Tile]] -> String
-    oneString r = unlines (map lineToString r)
+printBoard b = putStrLn (boardToString b)
+
+boardToString :: Board -> String
+boardToString b = unlines (map lineToString (rows b))
      where
       lineToString :: [Tile] -> String
       lineToString l = map tileToChar l
