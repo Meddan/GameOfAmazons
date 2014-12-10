@@ -27,6 +27,10 @@ instance Arbitrary Board where
     do rows <- sequence [ sequence [ tile | j <- [1..10] ] | i <- [1..10] ]
        return (Board rows)
 
+board :: Gen(Board)
+board = do rows <- sequence [ sequence [ tile | j <- [1..10] ] | i <- [1..10] ]
+           return (Board rows)
+
 type Pos = (Int,Int)
 
 -- For random generation
@@ -82,10 +86,10 @@ move b p1 p2 | not (clearPath b p1 p2) = b
             piece = getPos b p1
 
 -- Gives up, needs better condition
-prop_move :: Board -> APos -> APos -> Property
-prop_move b pos1 pos2 = b /= newBoard ==> (getPos newBoard p1 == Empty) && (getPos newBoard p2 == getPos b p1)
-  where p1 = (p pos1)
-        p2 = (p pos2)
+prop_move :: Board -> Tile -> APos -> Property
+prop_move b t pos = b /= newBoard ==> (getPos newBoard p1 == Empty) && (getPos newBoard p2 == getPos b p1)
+  where p2 = (p pos)
+        p1 = head (findTiles b t)
         newBoard = move b p1 p2
 
 --Shoots an arrow to the given space. Checks if the shot is possible but not if there is an amazon available to shoot it.
