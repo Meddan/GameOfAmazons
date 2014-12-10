@@ -161,3 +161,18 @@ findTiles b t = findInRow (rows b) t 0
         findInRow (x:xs) t y = (zip (elemIndices t x) yList) ++ findInRow xs t (y+1)
             where
                 yList = replicate 10 y
+
+printBoard :: Board -> IO ()
+printBoard b = putStrLn (oneString (rows b))
+  where
+    oneString :: [[Tile]] -> String
+    oneString r = unlines (map lineToString r)
+     where
+      lineToString :: [Tile] -> String
+      lineToString l = map tileToChar l
+        where
+          tileToChar :: Tile -> Char
+          tileToChar Black = 'B'
+          tileToChar White = 'W'
+          tileToChar Arrow = 'X'
+          tileToChar Empty = '.'
