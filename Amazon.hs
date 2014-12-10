@@ -2,10 +2,13 @@ import Data.List
 import Test.QuickCheck
 
 data Board = Board {rows :: [[Tile]]}
-    deriving (Show, Eq)
+    deriving Eq
 
 data Tile = Black | White | Arrow | Empty
     deriving (Show, Eq)
+
+instance Show Board where
+  show (Board rows) = boardToString rows
 
 -- Generates a random tile
 instance Arbitrary Tile where
@@ -163,10 +166,10 @@ findTiles b t = findInRow (rows b) t 0
                 yList = replicate 10 y
 
 printBoard :: Board -> IO ()
-printBoard b = putStrLn (boardToString b)
+printBoard b = putStrLn (boardToString (rows b))
 
-boardToString :: Board -> String
-boardToString b = unlines (map lineToString (rows b))
+boardToString :: [[Tile]] -> String
+boardToString t = unlines (map lineToString (t))
      where
       lineToString :: [Tile] -> String
       lineToString l = map tileToChar l
