@@ -145,21 +145,39 @@ validPos :: Pos -> Bool
 validPos (x,y) = (x >= 0 && x <=9) && (y >= 0 && y <=9)
 
 --Checks if the game is over and returns the color of the victor, empty if not over.
---TODO: Fix ugly.
+--TODO: Returning a tile is ugly. Perhaps return (Bool, Maybe tile)?
 gameOver :: Board -> Tile
-gameOver b = undefined
+gameOver b | overFor b White = White
+           | overFor b Black = Black
+           | otherwise = Empty
     where
         overFor :: Board -> Tile -> Bool
-        overFor b t = undefined
-            --findTiles b t
+        overFor b t = all (/=Empty) (concat (map (\x -> tilesAround b x) (findTiles b t)))
 
-        tilesAround :: Board -> [Pos] -> [Tile]
-        tilesAround = undefined
+tilesAround :: Board -> Pos -> [Tile]
+tilesAround b (x,y) | x == 0 && y == 0 = [se,s,e]
+                            | x == 9 && y == 9 = [nw,n,w]
+                            | x == 0 = [ne,se,n,s,e]
+                            | x == 9 = [nw,sw,n,s,w]
+                            | y == 0 = [se,sw,s,e,w]
+                            | y == 9 = [nw,ne,n,e,w]
+                            | otherwise = [nw,ne,se,sw,n,s,e,w]
+
+            where 
+                nw = getPos b ((x-1),(y-1))
+                ne = getPos b ((x+1),(y-1))
+                se = getPos b ((x+1),(y+1))
+                sw = getPos b ((x-1),(y+1))
+                n = getPos b (x,(y-1))
+                s = getPos b (x,(y+1))
+                e = getPos b ((x+1),y)
+                w = getPos b ((x+1),y)
+
 
 --Returns the tile at the given position after checking that it is valid.
 getPos :: Board -> Pos -> Tile
 getPos b (x,y) | validPos (x,y) = ((rows b)!!y)!!x
-               | otherwise = undefined
+               | otherwise = error "Invalid position"
 
 findTiles :: Board -> Tile -> [Pos]
 findTiles b t = findInRow (rows b) t 0
