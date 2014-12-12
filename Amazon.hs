@@ -82,7 +82,7 @@ gameLoop t b = do
           if validateMove newBoard t m a
             then do
               let finalBoard = shoot newBoard m a
-              gameLoop t finalBoard
+              gameLoop (switchTile t) finalBoard
             else do 
                  (putStrLn "Illegal shot!")
                  threadDelay 1000000
@@ -124,6 +124,10 @@ instructions = do
   putStrLn "Welcome!"
   putStrLn "Insert input with format x y mx my ax ay"
   putStrLn "Where x y is the coordinates of the amazon you wish to move, mx my is the tile you wish to move to and ax ay the coordinates where you wish to fire your arrow."
+
+switchTile :: Tile -> Tile
+switchTile t | t == White = Black
+             | t == Black = White
 
 initialBoard :: Board
 initialBoard = Board [(topRow Black),blankRow,blankRow,(middleRow Black),blankRow,blankRow,(middleRow White),blankRow,blankRow,(topRow White)]
