@@ -188,6 +188,7 @@ prop_shoot b pos1 pos2 = b /= newBoard ==> getPos newBoard p2 == Arrow
 --Not moving at all -> True or false?
 clearPath :: Board -> Pos -> Pos -> Bool
 clearPath b (x1,y1) (x2,y2) | not (validPos (x1,y1) && validPos (x2,y2)) = False
+                            | x1 == x2 && y1 == y2 = False
                             | not straightLine = False
                             | otherwise = emptyPath b (x1,y1) (x2,y2)
     where
