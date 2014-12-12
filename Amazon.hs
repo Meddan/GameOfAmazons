@@ -39,8 +39,8 @@ gameLoop t b = do
   printBoard b
   putStrLn ("It is " ++ show(t) ++ "'s turn")
   line <- getLine
-  let str = read line
-  let list = splitOn " " str
+  putStrLn line
+  let list = splitOn " " line
   if checkInput list
     then do 
       let p = head(parseInput list)
@@ -49,10 +49,10 @@ gameLoop t b = do
       if validateMove b t p m
         then do
           let newBoard = (move b p m)
-          if validateMove b t m a
+          if validateMove newBoard t m a
             then do
               let finalBoard = shoot newBoard m a
-              gameLoop t newBoard
+              gameLoop t finalBoard
             else do 
                  (putStrLn "Illegal shot!")
                  threadDelay 1000000
