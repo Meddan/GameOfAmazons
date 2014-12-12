@@ -193,7 +193,7 @@ printBoard :: Board -> IO ()
 printBoard b = putStrLn (boardToString (rows b))
 
 boardToString :: [[Tile]] -> String
-boardToString t = unlines (map lineToString (t))
+boardToString t = unlines (addCoordinates (map lineToString (t)))
      where
       lineToString :: [Tile] -> String
       lineToString l = map tileToChar l
@@ -203,3 +203,13 @@ boardToString t = unlines (map lineToString (t))
           tileToChar White = 'W'
           tileToChar Arrow = 'X'
           tileToChar Empty = '.'
+
+addCoordinates :: [String] -> [String]
+addCoordinates list = ("  "++coordinates)
+                      :transpose((" "++coordinates)
+                      :transpose((" "++whitespace)
+                      :transpose(whitespace
+                      :(transpose list))))
+  where coordinates = "0123456789"
+        whitespace = "          "
+
