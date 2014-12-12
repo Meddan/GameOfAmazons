@@ -1,5 +1,11 @@
 import Data.List
 import Test.QuickCheck
+import System.Console.ANSI hiding (Black, White)
+import System.IO
+import Control.Monad
+import Data.List.Split
+import Data.Char
+import Control.Concurrent
 
 data Board = Board {rows :: [[Tile]]}
     deriving Eq
@@ -16,6 +22,78 @@ instance Arbitrary Tile where
                     return White,
                     return Arrow,
                     return Empty]
+
+main :: IO ()
+main = do 
+  setTitle "Game of Amazons"
+  putStrLn "Press i for instructions or anything else for the game"
+
+  char <- getChar
+  if char == 'i'
+    then resetScreen >> instructions
+    else resetScreen >> gameLoop White initialBoard
+
+gameLoop :: Tile -> Board -> IO ()
+gameLoop t b = do 
+  resetScreen
+  printBoard b
+  putStrLn ("It is " ++ show(t) ++ "'s turn")
+  line <- getLine
+  let str = read line
+  let list = splitOn " " str
+  if checkInput list
+    then do 
+      let p = head(parseInput list)
+      let m = head(drop 1 (parseInput list))
+      let a = head(drop 2 (parseInput list))
+      if validateMove b t p m
+        then do
+          let newBoard = (move b p m)
+          if validateMove b t m a
+            then do
+              let finalBoard = shoot newBoard m a
+              gameLoop t newBoard
+            else do 
+                 (putStrLn "Illegal shot!")
+                 threadDelay 1000000
+                 gameLoop t b
+        else do (putStrLn "Illegal move!")
+                threadDelay 1000000
+                gameLoop t b
+
+    else do 
+            (putStrLn "Incorrect formatting!" )
+            threadDelay 1000000
+            gameLoop t b
+
+validateMove :: Board -> Tile -> Pos -> Pos -> Bool
+validateMove b t p m | getPos b p /= t = False
+                     | otherwise = clearPath b p m
+
+resetScreen :: IO ()
+resetScreen = clearScreen >> setSGR [Reset] >> setCursorPosition 0 0
+
+checkInput :: [String] -> Bool
+checkInput list | all (\x -> length x == 1) list = checkInput' list
+                | otherwise = False
+  where
+    checkInput' :: [String] -> Bool
+    checkInput' list = length (filter (\x -> elem (head x) numbers) list ) == 6
+            where 
+              numbers = map intToDigit [0..9]
+
+parseInput :: [String] -> [Pos]
+parseInput list = parseInput' (map (\x -> digitToInt (head x)) list)
+  where
+    parseInput' :: [Int] -> [Pos]
+    parseInput' [] = []
+    parseInput' (x:y:xs) = (x,y):parseInput' xs
+
+instructions :: IO ()
+instructions = do
+  putStrLn "Welcome!"
+  putStrLn "Insert input with format x y mx my ax ay"
+  putStrLn "Where x y is the coordinates of the amazon you wish to move, mx my is the tile you wish to move to and ax ay the coordinates where you wish to fire your arrow."
 
 -- Generates a weighted tile for arbitrary boards
 tile :: Gen(Tile)
@@ -117,24 +195,23 @@ clearPath b (x1,y1) (x2,y2) | not (validPos (x1,y1) && validPos (x2,y2)) = False
         straightLine = ((x1 == x2 ) || (y1 == y2) ) || (abs (x1 - x2) == abs (y1-y2))
         --Checks if the given path is empty or not
         emptyPath :: Board -> Pos -> Pos -> Bool
-        emptyPath b (x1,y1) (x2,y2) | y1 == y2 && east = diagonalPath b (x1,y1) (x2,y2) 1 0
-                                    | y1 == y2 = diagonalPath b (x1,y1) (x2,y2) (-1) 0
-                                    | x1 == x2 && north = diagonalPath b (x1,y1) (x2,y2) 0 1
-                                    | x1 == x2 = diagonalPath b (x1,y1) (x2,y2) 0 (-1)
-                                    | north && east = diagonalPath b (x1,y1) (x2,y2) 1 1
-                                    | east = diagonalPath b (x1,y1) (x2,y2) 1 (-1)
-                                    | north = diagonalPath b (x1,y1) (x2,y2) (-1) 1
-                                    | otherwise = diagonalPath b (x1,y1) (x2,y2) (-1) (-1)
+        emptyPath b (x1,y1) (x2,y2) | y1 == y2 && east = checkPath b (x1,y1) (x2,y2) 1 0
+                                    | y1 == y2 = checkPath b (x1,y1) (x2,y2) (-1) 0
+                                    | x1 == x2 && north = checkPath b (x1,y1) (x2,y2) 0 1
+                                    | x1 == x2 = checkPath b (x1,y1) (x2,y2) 0 (-1)
+                                    | north && east = checkPath b (x1,y1) (x2,y2) 1 1
+                                    | east = checkPath b (x1,y1) (x2,y2) 1 (-1)
+                                    | north = checkPath b (x1,y1) (x2,y2) (-1) 1
+                                    | otherwise = checkPath b (x1,y1) (x2,y2) (-1) (-1)
 
-            where row = head (drop y1 (rows b))
-                  row2 = head (drop x1 (transpose (rows b)))
+            where 
                   east = x2 > x1
                   north = y2 > y1
         --Checks if the diagonal path given is empty or not.
-        diagonalPath :: Board -> Pos -> Pos -> Int -> Int -> Bool
-        diagonalPath b (x1,y1) (x2,y2) dx dy | (x1 == x2) && (y1 == y2) = True
+        checkPath :: Board -> Pos -> Pos -> Int -> Int -> Bool
+        checkPath b (x1,y1) (x2,y2) dx dy | (x1 == x2) && (y1 == y2) = True
                                              | (getPos b ((x1+dx),(y1+dy))) /= Empty = False
-                                             | otherwise = diagonalPath b ((x1+dx),(y1+dy)) (x2,y2) dx dy
+                                             | otherwise = checkPath b ((x1+dx),(y1+dy)) (x2,y2) dx dy
 
 
 -- y2 = all (==Empty) (take (x2-x1) (drop (x1+1) row))
