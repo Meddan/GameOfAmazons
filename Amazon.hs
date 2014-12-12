@@ -23,6 +23,36 @@ instance Arbitrary Tile where
                     return Arrow,
                     return Empty]
 
+-- Generates a weighted tile for arbitrary boards
+tile :: Gen(Tile)
+tile = frequency [(10, return Empty),
+                  (2, oneof [return Black,
+                             return White,
+                             return Arrow])]
+
+-- Generates a randomized board
+instance Arbitrary Board where
+  arbitrary =
+    do rows <- sequence [ sequence [ tile | j <- [1..10] ] | i <- [1..10] ]
+       return (Board rows)
+
+board :: Gen(Board)
+board = do rows <- sequence [ sequence [ tile | j <- [1..10] ] | i <- [1..10] ]
+           return (Board rows)
+
+type Pos = (Int,Int)
+
+-- For random generation
+data APos = APos { p :: Pos}
+    deriving (Show, Eq)
+
+-- Generates random position
+instance Arbitrary APos where
+  arbitrary = do
+    x <- choose (0,9)
+    y <- choose (0,9)
+    return (APos (x,y))
+
 main :: IO ()
 main = do 
   setTitle "Game of Amazons"
@@ -94,36 +124,6 @@ instructions = do
   putStrLn "Welcome!"
   putStrLn "Insert input with format x y mx my ax ay"
   putStrLn "Where x y is the coordinates of the amazon you wish to move, mx my is the tile you wish to move to and ax ay the coordinates where you wish to fire your arrow."
-
--- Generates a weighted tile for arbitrary boards
-tile :: Gen(Tile)
-tile = frequency [(10, return Empty),
-                  (2, oneof [return Black,
-                             return White,
-                             return Arrow])]
-
--- Generates a randomized board
-instance Arbitrary Board where
-  arbitrary =
-    do rows <- sequence [ sequence [ tile | j <- [1..10] ] | i <- [1..10] ]
-       return (Board rows)
-
-board :: Gen(Board)
-board = do rows <- sequence [ sequence [ tile | j <- [1..10] ] | i <- [1..10] ]
-           return (Board rows)
-
-type Pos = (Int,Int)
-
--- For random generation
-data APos = APos { p :: Pos}
-    deriving (Show, Eq)
-
--- Generates random position
-instance Arbitrary APos where
-  arbitrary = do
-    x <- choose (0,9)
-    y <- choose (0,9)
-    return (APos (x,y))
 
 initialBoard :: Board
 initialBoard = Board [(topRow Black),blankRow,blankRow,(middleRow Black),blankRow,blankRow,(middleRow White),blankRow,blankRow,(topRow White)]
