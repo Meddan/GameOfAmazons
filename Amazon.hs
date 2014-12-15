@@ -56,10 +56,10 @@ instance Arbitrary APos where
 main :: IO ()
 main = do 
   setTitle "Game of Amazons"
-  putStrLn "Press i for instructions or anything else for the game"
+  putStrLn "Press i and then enter for instructions or anything else for the game"
 
-  char <- getChar
-  if char == 'i'
+  char <- getLine
+  if char == "i"
     then resetScreen >> instructions
     else resetScreen >> gameLoop White initialBoard
 
@@ -125,7 +125,6 @@ parseInput list = parseInput' (map (\x -> digitToInt (head x)) list)
 
 instructions :: IO ()
 instructions = do
-  clearInput <- getLine
   putStrLn "Welcome!"
   putStrLn "Insert input with format x y mx my ax ay"
   putStrLn "Where x y is the coordinates of the amazon you wish to move"
