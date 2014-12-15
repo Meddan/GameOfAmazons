@@ -69,7 +69,6 @@ gameLoop t b = do
   printBoard b
   putStrLn ("It is " ++ show(t) ++ "'s turn")
   line <- getLine
-  putStrLn line
   let list = splitOn " " line
   if checkInput list
     then do 
