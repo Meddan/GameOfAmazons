@@ -236,10 +236,6 @@ clearPath b (x1,y1) (x2,y2) | not (validPos (x1,y1) && validPos (x2,y2)) = False
                                              | (getPos b ((x1+dx),(y1+dy))) /= Empty = False
                                              | otherwise = checkPath b ((x1+dx),(y1+dy)) (x2,y2) dx dy
 
-
--- y2 = all (==Empty) (take (x2-x1) (drop (x1+1) row))
--- all (==Empty) (take (y2-y1) (drop (y1+1) row2))
-
 --Checks if the given position is valid (inside the board)
 validPos :: Pos -> Bool
 validPos (x,y) = (x >= 0 && x <=9) && (y >= 0 && y <=9)
