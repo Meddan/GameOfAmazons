@@ -151,15 +151,6 @@ initialBoard = Board [(topRow Black),blankRow,blankRow,(middleRow Black),blankRo
         middleRow :: Tile -> [Tile]
         middleRow t = replace 0 t (replace 9 t blankRow )
 
-gameOverBoard :: Board
-gameOverBoard = Board (lastRow:(replicate 9 filledRow))
-    where 
-      filledRow :: [Tile]
-      filledRow = replicate 10 Arrow
-
-      lastRow :: [Tile]
-      lastRow = [White, Empty] ++ (replicate 6 Arrow) ++ [Black, Empty]
-
 -- Replaces the given position in the board with the given tile.
 replaceM :: Pos -> Tile -> Board -> Board
 replaceM (x,y) t b | not (validPos (x,y)) = b
