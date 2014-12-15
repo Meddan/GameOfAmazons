@@ -127,7 +127,9 @@ instructions :: IO ()
 instructions = do
   putStrLn "Welcome!"
   putStrLn "Insert input with format x y mx my ax ay"
-  putStrLn "Where x y is the coordinates of the amazon you wish to move, mx my is the tile you wish to move to and ax ay the coordinates where you wish to fire your arrow."
+  putStrLn "Where x y is the coordinates of the amazon you wish to move"
+  putStrLn "mx my is the tile you wish to move to"
+  putStrLn "ax ay the coordinates where you wish to fire your arrow."
 
 switchTile :: Tile -> Tile
 switchTile t | t == White = Black
