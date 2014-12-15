@@ -140,7 +140,16 @@ switchTile t | t == White = Black
 
 -- Creates the initial board
 initialBoard :: Board
-initialBoard = Board [(topRow Black),blankRow,blankRow,(middleRow Black),blankRow,blankRow,(middleRow White),blankRow,blankRow,(topRow White)]
+initialBoard = Board [(topRow Black),
+                      blankRow,
+                      blankRow,
+                      (middleRow Black),
+                      blankRow,
+                      blankRow,
+                      (middleRow White),
+                      blankRow,
+                      blankRow,
+                      (topRow White)]
     where
         blankRow :: [Tile]
         blankRow = replicate 10 Empty
@@ -182,7 +191,8 @@ move b p1 p2 | not (clearPath b p1 p2) = b
 
 -- Gives up, needs better condition
 prop_move :: Board -> APos -> APos -> Property
-prop_move b pos1 pos2 = b /= newBoard ==> (getPos newBoard p1 == Empty) && (getPos newBoard p2 == getPos b p1)
+prop_move b pos1 pos2 = b /= newBoard ==> (getPos newBoard p1 == Empty) 
+                                          && (getPos newBoard p2 == getPos b p1)
   where p2 = (p pos2)
         p1 = (p pos1)
         newBoard = move b p1 p2
