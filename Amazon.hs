@@ -81,7 +81,12 @@ gameLoop t b = do
           if validateMove newBoard t m a
             then do
               let finalBoard = shoot newBoard m a
-              gameLoop (switchTile t) finalBoard
+              if (gameOver finalBoard ) == Black
+                then (putStrLn "Black won!")
+                else if (gameOver finalBoard) == White
+                then (putStrLn "White won!")
+                else do
+                  gameLoop (switchTile t) finalBoard
             else do 
                  (putStrLn "Illegal shot!")
                  threadDelay 1000000
@@ -139,6 +144,15 @@ initialBoard = Board [(topRow Black),blankRow,blankRow,(middleRow Black),blankRo
 
         middleRow :: Tile -> [Tile]
         middleRow t = replace 0 t (replace 9 t blankRow )
+
+gameOverBoard :: Board
+gameOverBoard = Board (lastRow:(replicate 9 filledRow))
+    where 
+      filledRow :: [Tile]
+      filledRow = replicate 10 Arrow
+
+      lastRow :: [Tile]
+      lastRow = [White, Empty] ++ (replicate 6 Arrow) ++ [Black, Empty]
 
 --Replaces the given position in the board with the given tile.
 replaceM :: Pos -> Tile -> Board -> Board
@@ -228,16 +242,18 @@ validPos (x,y) = (x >= 0 && x <=9) && (y >= 0 && y <=9)
 --Checks if the game is over and returns the color of the victor, empty if not over.
 --TODO: Returning a tile is ugly. Perhaps return (Bool, Maybe tile)?
 gameOver :: Board -> Tile
-gameOver b | overFor b White = White
-           | overFor b Black = Black
+gameOver b | overFor b White = Black
+           | overFor b Black = White
            | otherwise = Empty
     where
         overFor :: Board -> Tile -> Bool
         overFor b t = all (/=Empty) (concat (map (\x -> tilesAround b x) (findTiles b t)))
 
 tilesAround :: Board -> Pos -> [Tile]
-tilesAround b (x,y) | x == 0 && y == 0 = [se,s,e]
+tilesAround b (x,y)         | x == 0 && y == 0 = [se,s,e]
                             | x == 9 && y == 9 = [nw,n,w]
+                            | x == 0 && y == 9 = [n,ne,e]
+                            | x == 9 && y == 0 = [s,sw,w]
                             | x == 0 = [ne,se,n,s,e]
                             | x == 9 = [nw,sw,n,s,w]
                             | y == 0 = [se,sw,s,e,w]
@@ -252,7 +268,7 @@ tilesAround b (x,y) | x == 0 && y == 0 = [se,s,e]
                 n = getPos b (x,(y-1))
                 s = getPos b (x,(y+1))
                 e = getPos b ((x+1),y)
-                w = getPos b ((x+1),y)
+                w = getPos b ((x-1),y)
 
 
 --Returns the tile at the given position after checking that it is valid.
