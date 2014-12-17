@@ -108,16 +108,17 @@ gameLoop t b = do
             (putStrLn "Incorrect formatting!" )
             threadDelay 1000000
             gameLoop t b
---Validates a given move.
+
+-- Validates a given move.
 validateMove :: Board -> Tile -> Pos -> Pos -> Bool
 validateMove b t p m | getPos b p /= t = False
                      | otherwise = clearPath b p m
 
---Clears the screen so we don't get multiple boards on the screen.
+-- Clears the screen so we don't get multiple boards on the screen.
 resetScreen :: IO ()
 resetScreen = clearScreen >> setSGR [Reset] >> setCursorPosition 0 0
 
---Checks if the given input is formatted correctly
+-- Checks if the given input is formatted correctly
 checkInput :: [String] -> Bool
 checkInput list | all (\x -> length x == 1) list = checkInput' list
                 | otherwise = False
@@ -127,7 +128,7 @@ checkInput list | all (\x -> length x == 1) list = checkInput' list
             where 
               numbers = map intToDigit [0..9]
 
---Takes the input and converts it into a list of positions.
+-- Takes the input and converts it into a list of positions.
 parseInput :: [String] -> [Pos]
 parseInput list = parseInput' (map (\x -> digitToInt (head x)) list)
   where
@@ -135,7 +136,7 @@ parseInput list = parseInput' (map (\x -> digitToInt (head x)) list)
     parseInput' [] = []
     parseInput' (x:y:xs) = (x,y):parseInput' xs
 
---Prints instructions for the game.
+-- Prints instructions for the game.
 instructions :: IO ()
 instructions = do
   putStrLn "Welcome!"
@@ -147,12 +148,12 @@ instructions = do
   anyKey <- getLine
   resetScreen >> gameLoop White initialBoard
 
---Switches the turn.
+-- Switches the turn.
 switchTile :: Tile -> Tile
 switchTile t | t == White = Black
              | t == Black = White
 
---Produces the initial board.
+-- Produces the initial board.
 initialBoard :: Board
 initialBoard = Board [(topRow Black),
                       blankRow,
@@ -174,7 +175,7 @@ initialBoard = Board [(topRow Black),
         middleRow :: Tile -> [Tile]
         middleRow t = replace 0 t (replace 9 t blankRow )
 
---Replaces the given position in the board with the given tile.
+-- Replaces the given position in the board with the given tile.
 replacePos :: Pos -> Tile -> Board -> Board
 replacePos (x,y) t b | not (validPos (x,y)) = b
                      | otherwise = Board (replace y (replace x t row) (rows b))
@@ -185,7 +186,7 @@ prop_replacePos :: APos -> Tile -> Board -> Property
 prop_replacePos ap t b = t /= getPos b pos ==> (getPos (replacePos pos t b) pos == t)
   where pos = (p ap)
 
---Replaces the element at the given index with the given element.
+-- Replaces the element at the given index with the given element.
 replace :: Int -> a -> [a] -> [a]
 replace _ _ []  = []
 replace n a list | n < 0 || (n+1) > length list = list
@@ -269,7 +270,7 @@ clearPath b (x1,y1) (x2,y2) | not (validPos (x1,y1) && validPos (x2,y2)) = False
 validPos :: Pos -> Bool
 validPos (x,y) = (x >= 0 && x <=9) && (y >= 0 && y <=9)
 
---Checks if the game is over and returns the color of the victor, empty if not over.
+-- Checks if the game is over and returns the color of the victor, empty if not over.
 gameOver :: Board -> Tile
 gameOver b | overFor b White = Black
            | overFor b Black = White
@@ -278,7 +279,7 @@ gameOver b | overFor b White = Black
         overFor :: Board -> Tile -> Bool
         overFor b t = all (/=Empty) (concat (map (\x -> tilesAround b x) (findTiles b t)))
 
---Given a position and a board, returns all tiles around that tile.
+-- Given a position and a board, returns all tiles around that tile.
 tilesAround :: Board -> Pos -> [Tile]
 tilesAround b (x,y)         | x == 0 && y == 0 = [se,s,e]
                             | x == 9 && y == 9 = [nw,n,w]
@@ -306,7 +307,7 @@ getPos :: Board -> Pos -> Tile
 getPos b (x,y) | validPos (x,y) = ((rows b)!!y)!!x
                | otherwise = error "Invalid position"
 
---Given a board and a tile returns all positions where that tile can be found.
+-- Given a board and a tile returns all positions where that tile can be found.
 findTiles :: Board -> Tile -> [Pos]
 findTiles b t = findInRow (rows b) t 0
     where
@@ -317,11 +318,11 @@ findTiles b t = findInRow (rows b) t 0
             where
                 yList = replicate 10 y
 
---Prints a given board
+-- Prints a given board
 printBoard :: Board -> IO ()
 printBoard b = putStrLn (boardToString (rows b))
 
---Takes a board and creates a printable version with coordinates.
+-- Takes a board and creates a printable version with coordinates.
 boardToString :: [[Tile]] -> String
 boardToString t = unlines (addCoordinates (map lineToString (t)))
      where
@@ -334,6 +335,10 @@ boardToString t = unlines (addCoordinates (map lineToString (t)))
           tileToChar Arrow = 'X'
           tileToChar Empty = '.'
 
+{-
+  Adds coordinates around a board making it easier to see 
+  where to move from and where to move to
+-}
 addCoordinates :: [String] -> [String]
 addCoordinates list = ("  "++coordinates)
                       :transpose((" "++coordinates)
