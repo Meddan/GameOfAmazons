@@ -207,14 +207,6 @@ move b p1 p2 | not (clearPath b p1 p2) = b
         where 
             piece = getPos b p1
 
--- Gives up, needs better condition
-prop_move :: Board -> Tile -> APos -> Property
-prop_move b t pos2 = (b /= newBoard) && (null (findTiles b t)) ==> (getPos newBoard p1 == Empty) 
-                                          && (getPos newBoard p2 == getPos b p1)
-  where p2 = (p pos2)
-        p1 = head (findTiles b t)
-        newBoard = move b p1 p2
-
 {-
   Shoots an arrow to the given space. Checks if the shot is possible 
   but not if there is an amazon available to shoot it.
