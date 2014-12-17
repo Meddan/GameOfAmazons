@@ -208,11 +208,11 @@ move b p1 p2 | not (clearPath b p1 p2) = b
             piece = getPos b p1
 
 -- Gives up, needs better condition
-prop_move :: Board -> APos -> APos -> Property
-prop_move b pos1 pos2 = b /= newBoard ==> (getPos newBoard p1 == Empty) 
+prop_move :: Board -> Tile -> APos -> Property
+prop_move b t pos2 = (b /= newBoard) && (null (findTiles b t)) ==> (getPos newBoard p1 == Empty) 
                                           && (getPos newBoard p2 == getPos b p1)
   where p2 = (p pos2)
-        p1 = (p pos1)
+        p1 = head (findTiles b t)
         newBoard = move b p1 p2
 
 {-
@@ -260,7 +260,7 @@ clearPath b (x1,y1) (x2,y2) | not (validPos (x1,y1) && validPos (x2,y2)) = False
             where 
                   east = x2 > x1
                   north = y2 > y1
-        -- Checks if the diagonal path given is empty or not.
+        -- Checks if the path given is empty or not.
         checkPath :: Board -> Pos -> Pos -> Int -> Int -> Bool
         checkPath b (x1,y1) (x2,y2) dx dy | (x1 == x2) && (y1 == y2) = True
                                              | (getPos b ((x1+dx),(y1+dy))) /= Empty = False
