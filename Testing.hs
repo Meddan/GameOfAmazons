@@ -38,12 +38,20 @@ instance Arbitrary APos where
     y <- choose (0,9)
     return (APos (x,y))
 
+-- Tests that a board is a valid size, i.e 10x10
+prop_isValidBoard :: Board -> Bool
+prop_isValidBoard b = (length r == 10) && all (== 10) (map length r)
+    where r = (rows b)
+
+
+
 prop_shoot :: Board -> APos -> APos -> Property
 prop_shoot b pos1 pos2 = b /= newBoard ==> getPos newBoard p2 == Arrow
   where p1 = (p pos1)
         p2 = (p pos2)
         newBoard = shoot b p1 p2
 
+-- Checks that a tile actually is replaced
 prop_replacePos :: APos -> Tile -> Board -> Property
 prop_replacePos ap t b = t /= getPos b pos ==> (getPos (replacePos pos t b) pos == t)
   where pos = (p ap)
