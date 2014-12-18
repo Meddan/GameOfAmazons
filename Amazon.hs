@@ -231,32 +231,21 @@ clearPath :: Board -> Pos -> Pos -> Bool
 clearPath b (x1,y1) (x2,y2) | not (validPos (x1,y1) && validPos (x2,y2)) = False
                             | x1 == x2 && y1 == y2 = False
                             | not straightLine = False
-                            | otherwise = emptyPath b (x1,y1) (x2,y2)
-    where
+                            | otherwise = checkPath b (x1,y1) (x2,y2) deltaX deltaY
+    where 
+        deltaX = div (x2 - x1) (abs (x2-x1))
+        deltaY = div (y2 - y1) (abs (y2-y1))
         {-
           If we aren't moving straight up or down, we have to be 
           moving the same amount of tiles in both x and y direction.
         -}
         straightLine = ((x1 == x2 ) || (y1 == y2) ) || (abs (x1 - x2) == abs (y1-y2))
-        -- Checks if the given path is empty or not
-        emptyPath :: Board -> Pos -> Pos -> Bool
-        emptyPath b (x1,y1) (x2,y2) | y1 == y2 && east = checkPath b (x1,y1) (x2,y2) 1 0
-                                    | y1 == y2 = checkPath b (x1,y1) (x2,y2) (-1) 0
-                                    | x1 == x2 && north = checkPath b (x1,y1) (x2,y2) 0 1
-                                    | x1 == x2 = checkPath b (x1,y1) (x2,y2) 0 (-1)
-                                    | north && east = checkPath b (x1,y1) (x2,y2) 1 1
-                                    | east = checkPath b (x1,y1) (x2,y2) 1 (-1)
-                                    | north = checkPath b (x1,y1) (x2,y2) (-1) 1
-                                    | otherwise = checkPath b (x1,y1) (x2,y2) (-1) (-1)
 
-            where 
-                  east = x2 > x1
-                  north = y2 > y1
         -- Checks if the path given is empty or not.
         checkPath :: Board -> Pos -> Pos -> Int -> Int -> Bool
         checkPath b (x1,y1) (x2,y2) dx dy | (x1 == x2) && (y1 == y2) = True
-                                             | (getPos b ((x1+dx),(y1+dy))) /= Empty = False
-                                             | otherwise = checkPath b ((x1+dx),(y1+dy)) (x2,y2) dx dy
+                                          | (getPos b ((x1+dx),(y1+dy))) /= Empty = False
+                                          | otherwise = checkPath b ((x1+dx),(y1+dy)) (x2,y2) dx dy
 
 -- Checks if the given position is valid (inside the board)
 validPos :: Pos -> Bool
