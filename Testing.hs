@@ -38,14 +38,25 @@ instance Arbitrary APos where
     y <- choose (0,9)
     return (APos (x,y))
 
-gameOverBoard :: Board
-gameOverBoard = Board (lastRow:(replicate 9 filledRow))
+-- A board where only white has any moves left
+gameOverBoardWhite :: Board
+gameOverBoardWhite = Board (lastRow:(replicate 9 filledRow))
     where 
       filledRow :: [Tile]
       filledRow = replicate 10 Arrow
 
       lastRow :: [Tile]
-      lastRow = [White, Empty] ++ (replicate 6 Arrow) ++ [Black, Empty]
+      lastRow = [White, Empty] ++ (replicate 7 Arrow) ++ [Black]
+
+-- A board where only black has any moves left
+gameOverBoardBlack :: Board
+gameOverBoardBlack = Board (lastRow:(replicate 9 filledRow))
+    where 
+      filledRow :: [Tile]
+      filledRow = replicate 10 Arrow
+
+      lastRow :: [Tile]
+      lastRow = [White] ++ (replicate 7 Arrow) ++ [Black, Empty]
 
 -- Checks that a board is a valid size, i.e 10x10
 prop_isValidBoard :: Board -> Bool
@@ -56,6 +67,12 @@ prop_isValidBoard b = (length r == 10) && all (== 10) (map length r)
 prop_correctAmazons :: Board -> Bool
 prop_correctAmazons b = (length (findTiles b Black) == 4) && 
                         (length (findTiles b White) == 4)
+
+-- Checks that gameOver function is correct
+prop_gameOver :: Bool
+prop_gameOver = (gameOver gameOverBoardBlack == Black) &&
+                (gameOver gameOverBoardWhite == White) &&
+                (gameOver initialBoard == Empty)
 
 -- Checks that a shoot actually yields an arrow in the targeted tile
 prop_shoot :: Board -> APos -> APos -> Property
