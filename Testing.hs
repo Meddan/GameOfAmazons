@@ -44,7 +44,7 @@ prop_isValidBoard b = (length r == 10) && all (== 10) (map length r)
     where r = (rows b)
 
 
-
+-- Checks that a shoot actually yields an arrow in the targeted tile
 prop_shoot :: Board -> APos -> APos -> Property
 prop_shoot b pos1 pos2 = b /= newBoard ==> getPos newBoard p2 == Arrow
   where p1 = (p pos1)
