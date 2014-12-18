@@ -38,6 +38,15 @@ instance Arbitrary APos where
     y <- choose (0,9)
     return (APos (x,y))
 
+gameOverBoard :: Board
+gameOverBoard = Board (lastRow:(replicate 9 filledRow))
+    where 
+      filledRow :: [Tile]
+      filledRow = replicate 10 Arrow
+
+      lastRow :: [Tile]
+      lastRow = [White, Empty] ++ (replicate 6 Arrow) ++ [Black, Empty]
+
 -- Checks that a board is a valid size, i.e 10x10
 prop_isValidBoard :: Board -> Bool
 prop_isValidBoard b = (length r == 10) && all (== 10) (map length r)
