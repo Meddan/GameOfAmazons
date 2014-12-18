@@ -38,11 +38,15 @@ instance Arbitrary APos where
     y <- choose (0,9)
     return (APos (x,y))
 
--- Tests that a board is a valid size, i.e 10x10
+-- Checks that a board is a valid size, i.e 10x10
 prop_isValidBoard :: Board -> Bool
 prop_isValidBoard b = (length r == 10) && all (== 10) (map length r)
     where r = (rows b)
 
+-- Checks that the correct amount of amazons are on the board
+prop_correctAmazons :: Board -> Bool
+prop_correctAmazons b = (length (findTiles b Black) == 4) && 
+                        (length (findTiles b White) == 4)
 
 -- Checks that a shoot actually yields an arrow in the targeted tile
 prop_shoot :: Board -> APos -> APos -> Property
