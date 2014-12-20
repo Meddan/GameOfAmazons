@@ -5,6 +5,7 @@ import Data.List.Split
 import Data.Char
 import Control.Concurrent
 import Logic
+import Data.Maybe
 
 
 
@@ -66,7 +67,7 @@ gameLoop t b = do
 
 -- Validates a given move.
 validateMove :: Board -> Tile -> Pos -> Pos -> Bool
-validateMove b t p m | getPos b p /= t = False
+validateMove b t p m | fromJust (getPos b p )/= t = False
                      | otherwise = clearPath b p m
 
 -- Clears the screen so we don't get multiple boards on the screen.

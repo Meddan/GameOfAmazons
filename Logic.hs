@@ -1,6 +1,7 @@
 module Logic where
 
 import Data.List
+import Data.Maybe
 
 data Board = Board {rows :: [[Tile]]}
     deriving Eq
@@ -61,7 +62,7 @@ move b p1 p2 | not (clearPath b p1 p2) = b
              p2 piece (replacePos
              p1 Empty b)
         where 
-            piece = getPos b p1
+            piece = fromJust (getPos b p1)
 
 {-
   Shoots an arrow to the given space. Checks if the shot is possible 
@@ -81,6 +82,8 @@ clearPath :: Board -> Pos -> Pos -> Bool
 clearPath b (x1,y1) (x2,y2) | not (validPos (x1,y1) && validPos (x2,y2)) = False
                             | x1 == x2 && y1 == y2 = False
                             | not straightLine = False
+                            | x1 == x2 = checkPath b (x1,y1) (x2,y2) 0 deltaY
+                            | y1 == y2 = checkPath b (x1,y1) (x2,y2) deltaX 0
                             | otherwise = checkPath b (x1,y1) (x2,y2) deltaX deltaY
     where 
         deltaX = div (x2 - x1) (abs (x2-x1))
@@ -94,7 +97,7 @@ clearPath b (x1,y1) (x2,y2) | not (validPos (x1,y1) && validPos (x2,y2)) = False
         -- Checks if the path given is empty or not.
         checkPath :: Board -> Pos -> Pos -> Int -> Int -> Bool
         checkPath b (x1,y1) (x2,y2) dx dy | (x1 == x2) && (y1 == y2) = True
-                                          | (getPos b ((x1+dx),(y1+dy))) /= Empty = False
+                                          | fromJust (getPos b ((x1+dx),(y1+dy))) /= Empty = False
                                           | otherwise = checkPath b ((x1+dx),(y1+dy)) (x2,y2) dx dy
 
 -- Checks if the given position is valid (inside the board)
@@ -112,15 +115,7 @@ gameOver b | overFor b White = Black
 
 -- Given a position and a board, returns all tiles around that tile.
 tilesAround :: Board -> Pos -> [Tile]
-tilesAround b (x,y)         | x == 0 && y == 0 = [se,s,e]
-                            | x == 9 && y == 9 = [nw,n,w]
-                            | x == 0 && y == 9 = [n,ne,e]
-                            | x == 9 && y == 0 = [s,sw,w]
-                            | x == 0 = [ne,se,n,s,e]
-                            | x == 9 = [nw,sw,n,s,w]
-                            | y == 0 = [se,sw,s,e,w]
-                            | y == 9 = [nw,ne,n,e,w]
-                            | otherwise = [nw,ne,se,sw,n,s,e,w]
+tilesAround b (x,y) =map fromJust ( [nw,ne,se,sw,n,s,e,w] \\ [Nothing])
 
             where 
                 nw = getPos b ((x-1),(y-1))
@@ -134,9 +129,9 @@ tilesAround b (x,y)         | x == 0 && y == 0 = [se,s,e]
 
 
 -- Returns the tile at the given position after checking that it is valid.
-getPos :: Board -> Pos -> Tile
-getPos b (x,y) | validPos (x,y) = ((rows b)!!y)!!x
-               | otherwise = error "Invalid position"
+getPos :: Board -> Pos -> Maybe Tile
+getPos b (x,y) | validPos (x,y) = Just (((rows b)!!y)!!x)
+               | otherwise = Nothing
 
 -- Given a board and a tile returns all positions where that tile can be found.
 findTiles :: Board -> Tile -> [Pos]
