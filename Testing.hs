@@ -91,8 +91,17 @@ movementBoard = Board(
                  [Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty,White]])
 
 -- A board for testing that illegal moves are not made
-illegalMoveBoard :: Board
-illegalMoveBoard = undefined
+illegalMoveBoard = Board( 
+                [[Black,Arrow,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty],
+                 [Arrow,Arrow,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty],
+                 [Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty],
+                 [Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty],
+                 [Empty,Empty,Empty,Empty,Arrow,Empty,Empty,Empty,Empty,Empty],
+                 [Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty],
+                 [Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty],
+                 [Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty],
+                 [Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Arrow,Arrow],
+                 [Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Arrow,White]])
 
 -- Checks that a board is a valid size, i.e 10x10
 prop_isValidBoard :: Board -> Bool
