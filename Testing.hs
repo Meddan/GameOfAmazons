@@ -1,5 +1,6 @@
 module Testing where
 
+import Data.Maybe
 import Logic
 import Test.QuickCheck
 
@@ -68,6 +69,11 @@ prop_correctAmazons :: Board -> Bool
 prop_correctAmazons b = (length (findTiles b Black) == 4) && 
                         (length (findTiles b White) == 4)
 
+-- Checks that the game is in a valid state
+prop_validGameState :: Board -> Bool
+prop_validGameState b = prop_correctAmazons b &&
+                        prop_isValidBoard b
+
 -- Checks that gameOver function is correct
 prop_gameOver :: Bool
 prop_gameOver = (gameOver gameOverBoardBlack == Black) &&
@@ -76,12 +82,12 @@ prop_gameOver = (gameOver gameOverBoardBlack == Black) &&
 
 -- Checks that a shoot actually yields an arrow in the targeted tile
 prop_shoot :: Board -> APos -> APos -> Property
-prop_shoot b pos1 pos2 = b /= newBoard ==> getPos newBoard p2 == Arrow
+prop_shoot b pos1 pos2 = b /= newBoard ==> getPos newBoard p2 == Just Arrow
   where p1 = (p pos1)
         p2 = (p pos2)
         newBoard = shoot b p1 p2
 
 -- Checks that a tile actually is replaced
 prop_replacePos :: APos -> Tile -> Board -> Property
-prop_replacePos ap t b = t /= getPos b pos ==> (getPos (replacePos pos t b) pos == t)
+prop_replacePos ap t b = Just t /= getPos b pos ==> (getPos (replacePos pos t b) pos == Just t)
   where pos = (p ap)
