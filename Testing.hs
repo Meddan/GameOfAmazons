@@ -126,3 +126,24 @@ prop_shoot b pos1 pos2 = b /= newBoard ==> getPos newBoard p2 == Just Arrow
 prop_replacePos :: APos -> Tile -> Board -> Property
 prop_replacePos ap t b = Just t /= getPos b pos ==> (getPos (replacePos pos t b) pos == Just t)
   where pos = (p ap)
+
+-- Tests moves in all allowed directions
+prop_allMoves :: Bool
+prop_allMoves = (getPos forward (8,0) == Just Black) &&
+                (getPos down (0,8) == Just Black) &&
+                (getPos up (9,0) == Just White) &&
+                (getPos backward (0,9) == Just White) &&
+                (getPos northeast (7,1) == Just Black) &&
+                (getPos northwest (1,1) == Just Black) &&
+                (getPos southeast (8,8) == Just White) &&
+                (getPos southwest (2,8) == Just White)
+  where
+    -- The different moves to be tested, named after direction
+    forward = move movementBoard (0,0) (8,0)
+    down = move movementBoard (0,0) (0,8)
+    up = move movementBoard (9,9) (9,0)
+    backward = move movementBoard (9,9) (0,9)
+    northeast = move movementBoard (4,4) (7,1)
+    northwest = move movementBoard (4,4) (1,1)
+    southeast = move movementBoard (5,5) (8,8)
+    southwest = move movementBoard (5,5) (2,8)
