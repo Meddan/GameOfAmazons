@@ -42,22 +42,57 @@ instance Arbitrary APos where
 -- A board where only white has any moves left
 gameOverBoardWhite :: Board
 gameOverBoardWhite = Board (lastRow:(replicate 9 filledRow))
-    where 
-      filledRow :: [Tile]
-      filledRow = replicate 10 Arrow
-
+    where
       lastRow :: [Tile]
       lastRow = [White, Empty] ++ (replicate 7 Arrow) ++ [Black]
 
 -- A board where only black has any moves left
 gameOverBoardBlack :: Board
 gameOverBoardBlack = Board (lastRow:(replicate 9 filledRow))
-    where 
-      filledRow :: [Tile]
-      filledRow = replicate 10 Arrow
-
+    where
       lastRow :: [Tile]
       lastRow = [White] ++ (replicate 7 Arrow) ++ [Black, Empty]
+
+filledRow :: [Tile]
+filledRow = replicate 10 Arrow
+
+{-
+-- A board for testing movement in all directions
+movementBoard :: Board
+movementBoard = Board (topRow:(replicate 3 emptyRow):midRowBlack:midRowWhite:(replicate 3 emptyRow):bottomRow)
+  where
+    emptyRow :: [Tile]
+    emptyRow = replicate 10 Empty
+
+    topRow :: [Tile]
+    topRow = [Black] ++ (replicate 9 Empty)
+
+    midRowBlack :: [Tile]
+    midRowBlack = (replicate 4 Empty) ++ [Black] ++ (replicate 5 Empty)
+
+    midRowWhite :: [Tile]
+    midRowWhite = (replicate 5 Empty) ++ [White] ++ (replicate 4 Empty)
+
+    bottomRow :: [Tile]
+    bottomRow = (replicate 9 Empty) ++ [White]
+-}
+
+-- A board for testing movement in all directions
+movementBoard = Board( 
+                [[Black,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty],
+                 [Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty],
+                 [Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty],
+                 [Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty],
+                 [Empty,Empty,Empty,Empty,Black,Empty,Empty,Empty,Empty,Empty],
+                 [Empty,Empty,Empty,Empty,Empty,White,Empty,Empty,Empty,Empty],
+                 [Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty],
+                 [Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty],
+                 [Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty],
+                 [Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty,White]])
+
+-- A board for testing that illegal moves are not made
+illegalMoveBoard :: Board
+illegalMoveBoard = undefined
 
 -- Checks that a board is a valid size, i.e 10x10
 prop_isValidBoard :: Board -> Bool
