@@ -156,3 +156,20 @@ prop_allMoves = (getPos forward (8,0) == Just Black) &&
     northwest = move movementBoard (4,4) (1,1)
     southeast = move movementBoard (5,5) (8,8)
     southwest = move movementBoard (5,5) (2,8)
+
+{-
+  Checks that illegal moves are not made
+  As the function move returns the original board when
+  an illegal move is attempted, this is done by making
+  some illegal move on a board and checking that they 
+  have not changed.
+-}
+prop_illegalMoves :: Bool
+prop_illegalMoves = all (== illegalMoveBoard) listofBoards
+  where
+    blackOverArrow = move illegalMoveBoard (0,0) (0,9)
+    whiteOverArrow = move illegalMoveBoard (9,9) (9,0)
+    moveArrow = move illegalMoveBoard (4,4) (4,1)
+    moveEmpty = move illegalMoveBoard (5,5) (5,8)
+    listofBoards = [blackOverArrow] ++ [whiteOverArrow] 
+                    ++ [moveArrow] ++ [moveEmpty]
