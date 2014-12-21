@@ -115,7 +115,7 @@ prop_replacePos :: APos -> Tile -> Board -> Property
 prop_replacePos ap t b = Just t /= getPos b pos ==> (getPos (replacePos pos t b) pos == Just t)
   where pos = (p ap)
 
--- Tests moves in all allowed directions
+-- Tests moves in all allowed directions.
 prop_allMoves :: Bool
 prop_allMoves = (getPos forward (8,0) == Just Black) &&
                 (getPos down (0,8) == Just Black) &&
@@ -137,7 +137,8 @@ prop_allMoves = (getPos forward (8,0) == Just Black) &&
     southwest = move movementBoard (5,5) (2,8)
 
 {-
-  Checks that illegal moves are not made
+  Checks that illegal moves are not made.
+
   As the function move returns the original board when
   an illegal move is attempted, this is done by making
   some illegal move on a board and checking that they 
