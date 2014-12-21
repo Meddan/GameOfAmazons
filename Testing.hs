@@ -56,27 +56,6 @@ gameOverBoardBlack = Board (lastRow:(replicate 9 filledRow))
 filledRow :: [Tile]
 filledRow = replicate 10 Arrow
 
-{-
--- A board for testing movement in all directions
-movementBoard :: Board
-movementBoard = Board (topRow:(replicate 3 emptyRow):midRowBlack:midRowWhite:(replicate 3 emptyRow):bottomRow)
-  where
-    emptyRow :: [Tile]
-    emptyRow = replicate 10 Empty
-
-    topRow :: [Tile]
-    topRow = [Black] ++ (replicate 9 Empty)
-
-    midRowBlack :: [Tile]
-    midRowBlack = (replicate 4 Empty) ++ [Black] ++ (replicate 5 Empty)
-
-    midRowWhite :: [Tile]
-    midRowWhite = (replicate 5 Empty) ++ [White] ++ (replicate 4 Empty)
-
-    bottomRow :: [Tile]
-    bottomRow = (replicate 9 Empty) ++ [White]
--}
-
 -- A board for testing movement in all directions
 movementBoard = Board( 
                 [[Black,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty],
