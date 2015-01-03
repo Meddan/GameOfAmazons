@@ -115,7 +115,7 @@ gameOver b | overFor b White = Black
 
 -- Given a position and a board, returns all tiles around that tile.
 tilesAround :: Board -> Pos -> [Tile]
-tilesAround b (x,y) =map fromJust ( [nw,ne,se,sw,n,s,e,w] \\ [Nothing])
+tilesAround b (x,y) = map fromJust ( [nw,ne,se,sw,n,s,e,w] \\ [Nothing])
 
             where 
                 nw = getPos b ((x-1),(y-1))
